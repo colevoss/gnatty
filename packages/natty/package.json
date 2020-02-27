@@ -1,0 +1,21 @@
+{
+  "name": "natty",
+  "version": "0.0.0",
+  "description": "<Need description>",
+  "license": "ISC",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "dist": "dist",
+    "test": "test"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "config": "^3.2.6"
+  }
+}
