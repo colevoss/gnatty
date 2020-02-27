@@ -16,6 +16,13 @@
     "build": "tsc"
   },
   "dependencies": {
-    "config": "^3.2.6"
+    "config": "^3.2.6",
+    "nats": "^1.4.2",
+    "pino": "^5.16.0",
+    "pino-pretty": "^3.6.0",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "@types/pino": "^5.15.5"
   }
 }
