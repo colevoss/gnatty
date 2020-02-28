@@ -73,8 +73,6 @@ describe('Server', () => {
       const server = new MockServer({} as any);
       server.connection = nats.__connection;
 
-      // nats.__connection.drain();
-
       await server.stop();
 
       expect(nats.__connection.drain).toHaveBeenCalled();
@@ -82,8 +80,62 @@ describe('Server', () => {
   });
 
   describe('.request', () => {
-    it.todo('makes a request to a subject and gets a response');
-    it.todo('merges data and meta into one payload');
-    it.todo('It defaults options');
+    it('Makes a request to a subject and gets a response', async () => {
+      const server = new MockServer({} as any);
+      server.connection = nats.__connection;
+      nats.__setTestResponse('test-response');
+
+      const response = await server.request('test.subject');
+
+      expect(response).toBe('test-response');
+    });
+
+    it('Throws an error if it is a nats error', async () => {
+      const server = new MockServer({} as any);
+      server.connection = nats.__connection;
+
+      nats.__setTestResponse(new nats.NatsError('test'));
+
+      await expect(server.request('test.subject')).rejects.toThrowError();
+    });
+
+    it('merges data and meta into one payload', async () => {
+      const server = new MockServer({} as any);
+      server.connection = nats.__connection;
+      nats.__setTestResponse('test-response');
+
+      const response = await server.request(
+        'test.subject',
+        { data: 'test' },
+        { meta: 'test' },
+      );
+
+      expect(nats.__connection.request).toHaveBeenCalledWith(
+        'test.subject',
+        expect.objectContaining({
+          data: {
+            data: 'test',
+          },
+          meta: {
+            meta: 'test',
+          },
+        }),
+        expect.objectContaining({}),
+        expect.any(Function),
+      );
+    });
   });
+
+  describe('::create', () => {
+    it('Returns a new instance of MockServer', () => {
+      const mockServer = MockServer.create({ config: true } as any);
+
+      expect(mockServer).toBeInstanceOf(MockServer);
+      expect(mockServer.connectionConfig).toEqual({ config: true });
+    });
+  });
+
+  // describe('.subscribe', () => {
+  // it('');
+  // });
 });

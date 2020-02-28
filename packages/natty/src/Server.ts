@@ -62,7 +62,6 @@ export abstract class Server {
     let subscriptionOptions: any;
 
     if (typeof options === 'function') {
-      // O
       subscriptionCallback = options;
     } else if (typeof options === 'object') {
       subscriptionCallback = callback;
@@ -169,7 +168,7 @@ export abstract class Server {
    * Hook that is called after the server has been created but before it connects
    * to the Nats server
    */
-  public async created() {}
+  // public async created() {}
 
   /**
    * Hook that is called after a this server has connected to the Nats server
