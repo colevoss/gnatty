@@ -1,7 +1,7 @@
-import { RequestOptions } from "nats";
-import * as pino from "pino";
-import { Server } from "./Server";
-import { ISubscriptionPayload } from "./interfaces/ISubscriptionPayload";
+import { RequestOptions } from 'nats';
+import * as pino from 'pino';
+import { Server } from './Server';
+import { ISubscriptionPayload } from './interfaces/ISubscriptionPayload';
 
 export class Context<Data = {}, Meta = {}> {
   /**
@@ -17,7 +17,7 @@ export class Context<Data = {}, Meta = {}> {
   /**
    * The type of event this context instance was created for
    */
-  public type: "action" | "subscription";
+  public type: 'action' | 'subscription';
 
   /**
    * An instance of the logger to use for this context

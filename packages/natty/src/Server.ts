@@ -1,11 +1,13 @@
-import * as nats from "nats";
-import * as pino from "pino";
-import { Context } from "./Context";
-import * as Logger from "./Logger";
-import { Service } from "./Service";
-import { ISubscriptionPayload } from "./interfaces/ISubscriptionPayload";
-import { IMiddleware } from "./interfaces/IMiddleware";
-import { ClassType } from "./interfaces/ClassType";
+import * as nats from 'nats';
+import * as pino from 'pino';
+import { Context } from './Context';
+import * as Logger from './Logger';
+import { Service } from './Service';
+import { ISubscriptionPayload } from './interfaces/ISubscriptionPayload';
+import { IMiddleware } from './interfaces/IMiddleware';
+import { ClassType } from './interfaces/ClassType';
+
+type SubscriptionHandler = (payload: ISubscriptionPayload) => void;
 
 export abstract class Server {
   /**
@@ -43,6 +45,55 @@ export abstract class Server {
    */
   public publish<Payload = object>(subject: string, payload: Payload) {
     this.connection.publish(subject, payload);
+  }
+
+  public subscribe(subject: string, callback: SubscriptionHandler): void;
+  public subscribe(
+    subject: string,
+    options: nats.SubscribeOptions,
+    callback: SubscriptionHandler,
+  ): void;
+  public subscribe(
+    subject: string,
+    options: nats.SubscribeOptions | SubscriptionHandler,
+    callback?: SubscriptionHandler,
+  ): void {
+    let subscriptionCallback: Function;
+    let subscriptionOptions: any;
+
+    if (typeof options === 'function') {
+      // O
+      subscriptionCallback = options;
+    } else if (typeof options === 'object') {
+      subscriptionCallback = callback;
+      subscriptionOptions = options;
+    }
+
+    const handler = (msg: any, reply: string, subject: string, sid: string) => {
+      const subscriptionPayload = {
+        msg,
+        reply,
+        subject,
+        sid,
+        type: 'subscription',
+      };
+
+      subscriptionCallback(subscriptionPayload);
+    };
+
+    if (subscriptionOptions) {
+      this.connection.subscribe(subject, subscriptionOptions, handler);
+    } else {
+      this.connection.subscribe(subject, handler);
+    }
+  }
+
+  public stop() {
+    return new Promise((resolve) => {
+      this.connection.drain(() => {
+        resolve();
+      });
+    });
   }
 
   /**
@@ -140,26 +191,26 @@ export abstract class Server {
     return new Promise((resolve, reject) => {
       this.connection = nats.connect(this.connectionConfig);
 
-      this.connection.on("connect", async () => {
+      this.connection.on('connect', async () => {
         this.isConnected = true;
 
-        this.logger.info("Connected to nats");
+        this.logger.info('Connected to nats');
         await this.connected();
 
         this.registerServices(services);
 
         resolve();
 
-        this.logger.info("Server started");
+        this.logger.info('Server started');
         await this.started();
       });
 
-      this.connection.on("error", (err) => {
+      this.connection.on('error', (err) => {
         this.logger.error(err);
       });
 
-      this.connection.on("disconnect", () => {
-        this.logger.info("Diconnected from nats server");
+      this.connection.on('disconnect', () => {
+        this.logger.info('Diconnected from nats server');
       });
     });
   }

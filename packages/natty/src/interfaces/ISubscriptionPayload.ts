@@ -6,5 +6,5 @@ export interface ISubscriptionPayload<Data = any, Meta = any> {
   reply?: string;
   subject: string;
   sid: string;
-  type: "action" | "subscription";
+  type: 'action' | 'subscription';
 }

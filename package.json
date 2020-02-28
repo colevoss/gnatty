@@ -6,11 +6,12 @@
     "commit": "git-cz",
     "lerna": "lerna",
     "tsc": "tsc",
-    "test": "jest",
+    "test": "NODE_ENV=test jest",
     "prettier": "prettier",
     "clean:build": "rimraf **/packages/**/dist",
     "prebuild": "npm run clean:build",
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "up": "docker-compose up"
   },
   "devDependencies": {
     "@types/jest": "^25.1.3",
@@ -20,6 +21,7 @@
     "husky": "^4.2.3",
     "jest": "^25.1.0",
     "lerna": "^3.20.2",
+    "prettier": "^1.19.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^25.2.1",
     "typescript": "^3.8.2"

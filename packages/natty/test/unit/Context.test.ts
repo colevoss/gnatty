@@ -1,25 +1,19 @@
 import { Context } from '../../src';
-import { ISubscriptionPayload } from '../../src/interfaces/ISubscriptionPayload';
+import { createMockSubPayload } from '../util/createMockSubPayload';
 
-const mockServer = {
-  logger: () => {},
-};
-
-const createMockSubPayload = (
-  {
-    msg = { data: {}, meta: {} },
-    reply,
-    subject = 'test.subject',
-    sid = '1',
-    type = 'action',
-  }: ISubscriptionPayload = {} as any,
-) => ({ msg, reply, subject, sid, type });
+const createMockServer = ({
+  publish = jest.fn(),
+  request = jest.fn(),
+} = {}) => ({
+  publish,
+  request,
+});
 
 describe('Context', () => {
   describe('constructor', () => {
     it('Is new able', () => {
       const context = new Context(
-        mockServer as any,
+        createMockServer() as any,
         createMockSubPayload() as any,
       );
 
@@ -29,17 +23,13 @@ describe('Context', () => {
     it('Calls onCreated when instantiated', () => {
       const spy = jest.spyOn(Context.prototype, 'onCreate');
 
-      new Context(mockServer as any, createMockSubPayload() as any);
+      new Context(createMockServer() as any, createMockSubPayload() as any);
 
       expect(spy).toHaveBeenCalled();
     });
   });
 
   describe('.send', () => {
-    const createMockServer = () => ({
-      publish: jest.fn(),
-    });
-
     it('Sends the response to the reply subject', () => {
       const mockServer = createMockServer();
 
@@ -82,10 +72,6 @@ describe('Context', () => {
   });
 
   describe('.publish', () => {
-    const createMockServer = () => ({
-      publish: jest.fn(),
-    });
-
     it('Publishes data to the provided subject', () => {
       const mockServer = createMockServer();
 
@@ -123,7 +109,7 @@ describe('Context', () => {
       );
     });
 
-    it('Calls onPublish wht the merged payload', () => {
+    it('Calls onPublish with the merged payload', () => {
       const mockServer = createMockServer();
 
       const context = new Context(
@@ -145,6 +131,76 @@ describe('Context', () => {
           },
         }),
       );
+    });
+  });
+
+  describe('request', () => {
+    it('Returns the response from', async () => {
+      const mockServer = createMockServer({
+        request: jest.fn(() => 'response'),
+      });
+
+      const context = new Context(mockServer as any, createMockSubPayload());
+
+      const response = await context.request('name', {});
+
+      expect(response).toBe('response');
+    });
+
+    it('Merges its own context with the provided context', async () => {
+      const mockServer = createMockServer({
+        request: jest.fn(() => 'response'),
+      });
+
+      const context = new Context(
+        mockServer as any,
+        createMockSubPayload({
+          msg: { meta: { context: 'meta' } },
+        } as any),
+      );
+
+      await context.request('name', {}, { request: 'meta' });
+
+      expect(mockServer.request).toHaveBeenCalledWith(
+        'name',
+        {},
+        {
+          context: 'meta',
+          request: 'meta',
+        },
+        expect.objectContaining({}),
+      );
+    });
+
+    it('Defatuls meta and options to empty object if not provided', async () => {
+      const mockServer = createMockServer({
+        request: jest.fn(() => 'response'),
+      });
+
+      const context = new Context(mockServer as any, createMockSubPayload());
+
+      await context.request('name', {});
+
+      expect(mockServer.request).toHaveBeenCalledWith(
+        'name',
+        {},
+        expect.objectContaining({}),
+        expect.objectContaining({}),
+      );
+    });
+
+    it('Calls onRequest with the response', async () => {
+      const mockServer = createMockServer({
+        request: jest.fn(() => 'response'),
+      });
+
+      const context = new Context(mockServer as any, createMockSubPayload());
+
+      const spy = jest.spyOn(context, 'onRequest');
+
+      await context.request('name', {});
+
+      expect(spy).toHaveBeenCalledWith('response');
     });
   });
 });

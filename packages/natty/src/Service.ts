@@ -1,16 +1,16 @@
-import * as pino from "pino";
-import { Server } from "./Server";
-import { Context } from "./Context";
-import { ISubscriptionPayload } from "./interfaces/ISubscriptionPayload";
-import { IActionParams } from "./interfaces/IActionParams";
-import { IMiddleware } from "./interfaces/IMiddleware";
-import { IHandler } from "./interfaces/IHandler";
+import * as pino from 'pino';
+import { Server } from './Server';
+import { Context } from './Context';
+import { ISubscriptionPayload } from './interfaces/ISubscriptionPayload';
+import { IActionParams } from './interfaces/IActionParams';
+import { IMiddleware } from './interfaces/IMiddleware';
+import { IHandler } from './interfaces/IHandler';
 import {
   ACTION_SYMBOL,
   SUBSCRIPTION_SYMBOL,
   MIDDLEWARE_SYMBOL,
   IEndpoint,
-} from "./Decorators";
+} from './Decorators';
 
 export abstract class Service<S extends Server = Server> {
   /**
@@ -58,7 +58,7 @@ export abstract class Service<S extends Server = Server> {
 
     this.logger.info(
       {
-        type: "service",
+        type: 'service',
         serviceName: this.name,
       },
       `${this.name} service registered`,
@@ -119,9 +119,10 @@ export abstract class Service<S extends Server = Server> {
    * @param type - The type of handler function. Either an "action" or a "subscription"
    * @param middleware - An array of middleware to be used for this handler
    */
+  // TODO: Update this to suppoert server.subscribe
   private generateHandler(
     handler: IHandler,
-    type: "action" | "subscription",
+    type: 'action' | 'subscription',
     middleware: IMiddleware[] = [],
   ) {
     return (msg: any, reply: string, subject: string, sid: string) => {
@@ -163,21 +164,20 @@ export abstract class Service<S extends Server = Server> {
       ...middleware,
     ];
 
-    const type = action ? "action" : "subscription";
+    const type = action ? 'action' : 'subscription';
 
     const contextHandler = this.generateHandler(
       handler,
       type,
       handlerMiddlware,
     );
+
     const metadata = subscribe || action;
-
     const { name } = metadata;
-
     const queueGroupName = this.group || this.name;
-
     const subjectName = action ? `${this.name}.${name}` : name;
 
+    // TODO: Update this to suppoert server.subscribe
     this.server.connection.subscribe(
       subjectName,
       { queue: queueGroupName },
@@ -186,10 +186,10 @@ export abstract class Service<S extends Server = Server> {
 
     this.logger.info(
       {
-        type: action ? "action" : "subscription",
+        type: action ? 'action' : 'subscription',
         subjectName,
       },
-      `${action ? "action" : "subscription"} ${subjectName} registered`,
+      `${action ? 'action' : 'subscription'} ${subjectName} registered`,
     );
   }
 
