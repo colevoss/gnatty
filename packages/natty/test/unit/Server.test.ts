@@ -104,11 +104,7 @@ describe('Server', () => {
       server.connection = nats.__connection;
       nats.__setTestResponse('test-response');
 
-      const response = await server.request(
-        'test.subject',
-        { data: 'test' },
-        { meta: 'test' },
-      );
+      await server.request('test.subject', { data: 'test' }, { meta: 'test' });
 
       expect(nats.__connection.request).toHaveBeenCalledWith(
         'test.subject',
@@ -135,7 +131,64 @@ describe('Server', () => {
     });
   });
 
-  // describe('.subscribe', () => {
-  // it('');
-  // });
+  describe('.subscribe', () => {
+    it('Can accept the callback as the second argument', () => {
+      const server = new MockServer({} as any);
+      server.connection = nats.__connection;
+
+      const cb = () => {};
+
+      server.subscribe('test.subject', cb);
+
+      expect(server.connection.subscribe).toHaveBeenCalledWith(
+        'test.subject',
+        expect.any(Function),
+      );
+    });
+
+    it('Accepts options as the second arg and callback as the third', () => {
+      const server = new MockServer({} as any);
+      server.connection = nats.__connection;
+
+      const options = { test: 'options' } as any;
+      const cb = () => {};
+
+      server.subscribe('test.subject', options, cb);
+
+      expect(server.connection.subscribe).toHaveBeenCalledWith(
+        'test.subject',
+        options,
+        expect.any(Function),
+      );
+    });
+
+    it('Calls the handler with the payload object', () => {
+      const server = new MockServer({} as any);
+      server.connection = nats.__connection;
+
+      nats.__setTestSubscribeEvent(
+        { test: 'message' },
+        'test-reply',
+        'test-subject',
+        'test-sid',
+      );
+
+      const options = { test: 'options' } as any;
+      const cb = jest.fn();
+
+      server.subscribe('test.subject', options, cb);
+
+      nats.__callSubscription();
+
+      expect(cb).toHaveBeenCalledWith(
+        expect.objectContaining({
+          msg: { test: 'message' },
+          reply: 'test-reply',
+          subject: 'test-subject',
+          sid: 'test-sid',
+          type: 'subscription',
+        }),
+      );
+    });
+  });
 });

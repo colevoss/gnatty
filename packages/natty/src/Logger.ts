@@ -1,16 +1,19 @@
-import * as pino from "pino";
+import * as pino from 'pino';
 
 export const logLevel = (env: string) => {
   switch (env) {
-    case "test":
-      return "error";
+    case 'test':
+      return 'error';
 
-    case "dev":
-    case "development":
-      return "debug";
+    /* istanbul ignore next */
+    case 'dev':
+    /* istanbul ignore next */
+    case 'development':
+      return 'debug';
 
+    /* istanbul ignore next */
     default:
-      return "info";
+      return 'info';
   }
 };
 
@@ -19,6 +22,6 @@ export const createLogger = () => {
 
   return pino({
     level: logLevel(env),
-    prettyPrint: env !== "production",
+    prettyPrint: env !== 'production',
   });
 };

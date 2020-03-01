@@ -4,6 +4,11 @@ const { EventEmitter } = require('events');
 jest.genMockFromModule('nats');
 
 let __testResponse = 'test-response';
+let __testSubscribeEvent = [];
+let sub = () => {};
+let __callSubscription = () => {
+  sub();
+};
 
 class MockConnection extends EventEmitter {
   constructor() {
@@ -17,6 +22,12 @@ class MockConnection extends EventEmitter {
     this.request = jest.fn((name, payload, options, cb) => {
       cb(__testResponse);
     });
+
+    this.subscribe = jest.fn((name, ...rest) => {
+      const cb = rest[rest.length - 1];
+
+      sub = () => cb(...__testSubscribeEvent);
+    });
   }
 }
 
@@ -28,6 +39,12 @@ module.exports = {
   __setTestResponse: (response) => {
     __testResponse = response;
   },
+
+  __setTestSubscribeEvent: (...args) => {
+    __testSubscribeEvent = args;
+  },
+
+  __callSubscription,
 
   __connection: connection,
   __connect: () => connection.emit('connect'),
