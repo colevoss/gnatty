@@ -4,7 +4,7 @@ import {
   Context,
   Action,
   Subscribe,
-  Middlware,
+  Middleware,
 } from '../../src';
 
 const nats = require('nats');
@@ -39,7 +39,7 @@ class TestService extends Service<MockServer> {
 
   @Subscribe('subscription')
   // @ts-ignore
-  @Middlware((ctx: any, next: any) => {
+  @Middleware((ctx: any, next: any) => {
     testFn();
     next();
   })

@@ -2,7 +2,6 @@ import * as pino from 'pino';
 import { Server } from './Server';
 import { Context } from './Context';
 import { ISubscriptionPayload } from './interfaces/ISubscriptionPayload';
-import { IActionParams } from './interfaces/IActionParams';
 import { IMiddleware } from './interfaces/IMiddleware';
 import { IHandler } from './interfaces/IHandler';
 import {
@@ -119,26 +118,34 @@ export abstract class Service<S extends Server = Server> {
    * @param type - The type of handler function. Either an "action" or a "subscription"
    * @param middleware - An array of middleware to be used for this handler
    */
-  // TODO: Update this to suppoert server.subscribe
   private generateHandler(
     handler: IHandler,
     type: 'action' | 'subscription',
     middleware: IMiddleware[] = [],
   ) {
-    return (msg: any, reply: string, subject: string, sid: string) => {
-      return this.contextFactory({
+    return async (msg: any, reply: string, subject: string, sid: string) => {
+      const context = await this.contextFactory({
         msg,
         reply,
         subject,
         sid,
         type,
-      })
-        .then((ctx) => {
-          return this.applyMiddleware(middleware)(ctx, handler);
-        })
-        .catch((err) => {
-          this.logger.error(err);
+      });
+
+      try {
+        await this.applyMiddleware(middleware)(context, handler);
+      } catch (e) {
+        this.logger.error(e);
+        if (type === 'subscription') return;
+
+        const errorResponse = {
+          message: e.message,
+        };
+
+        context.send({
+          error: errorResponse,
         });
+      }
     };
   }
 

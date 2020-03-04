@@ -1,10 +1,11 @@
-import { IActionParams } from "./interfaces/IActionParams";
-import { IMiddleware } from "./interfaces/IMiddleware";
-import { IHandler } from "./interfaces/IHandler";
+import { IActionParams } from './interfaces/IActionParams';
+import { IMiddleware } from './interfaces/IMiddleware';
+import { IHandler } from './interfaces/IHandler';
+import { Context } from './Context';
 
-export const ACTION_SYMBOL = Symbol("NATTY_ACTION");
-export const SUBSCRIPTION_SYMBOL = Symbol("NATTY_SUBSCRIPTION");
-export const MIDDLEWARE_SYMBOL = Symbol("NATTY_MIDDLEWARE");
+export const ACTION_SYMBOL = Symbol('NATTY_ACTION');
+export const SUBSCRIPTION_SYMBOL = Symbol('NATTY_SUBSCRIPTION');
+export const MIDDLEWARE_SYMBOL = Symbol('NATTY_MIDDLEWARE');
 
 export type IEndpoint = {
   [ACTION_SYMBOL]?: IActionParams;
@@ -29,8 +30,12 @@ export function Subscribe(subscribeParams: string): MethodDecorator {
   return createActionDecorator(params, SUBSCRIPTION_SYMBOL);
 }
 
-export function Middlware(fn: IMiddleware) {
-  return (target: any, propertyKey: string, descriptor: PropertyDecorator) => {
+export function Middleware(fn: IMiddleware) {
+  return (
+    target: any,
+    propertyKey: string,
+    descriptor: TypedPropertyDescriptor<(...args: any[]) => any>,
+  ) => {
     const keyMetadata = Reflect.getMetadata(propertyKey, target) || {};
 
     const newMetadata = {
