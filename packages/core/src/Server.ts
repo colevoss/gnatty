@@ -147,7 +147,7 @@ export abstract class Server {
   }
 
   /**
-   * Instantiates a new instance of a Natty server and returns it. This is the
+   * Instantiates a new instance of a Naty server and returns it. This is the
    * same as calling the following but this gives a more concise API.
    * ```
    * const server = new Server(config);
@@ -185,7 +185,7 @@ export abstract class Server {
    *
    * @param services - Array of services that should be registered on this server
    */
-  public async start<S extends Service<this>>(services: ClassType<S>[]) {
+  public async start<S extends Service<this>>(services: ClassType<S>[] = []) {
     // TODO: Error handling
     return new Promise((resolve, reject) => {
       this.connection = nats.connect(this.connectionConfig);

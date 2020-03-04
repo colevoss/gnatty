@@ -3,9 +3,9 @@ import { IMiddleware } from './interfaces/IMiddleware';
 import { IHandler } from './interfaces/IHandler';
 import { Context } from './Context';
 
-export const ACTION_SYMBOL = Symbol('NATTY_ACTION');
-export const SUBSCRIPTION_SYMBOL = Symbol('NATTY_SUBSCRIPTION');
-export const MIDDLEWARE_SYMBOL = Symbol('NATTY_MIDDLEWARE');
+export const ACTION_SYMBOL = Symbol('NATY_ACTION');
+export const SUBSCRIPTION_SYMBOL = Symbol('NATY_SUBSCRIPTION');
+export const MIDDLEWARE_SYMBOL = Symbol('NATY_MIDDLEWARE');
 
 export type IEndpoint = {
   [ACTION_SYMBOL]?: IActionParams;

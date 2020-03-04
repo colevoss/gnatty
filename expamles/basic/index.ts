@@ -5,7 +5,7 @@ import {
   Action,
   Middleware,
   NextFn,
-} from '../../packages/natty/src';
+} from '../../packages/core/src';
 
 class MyServer extends Server {}
 
