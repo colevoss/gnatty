@@ -5,7 +5,8 @@ import {
   Action,
   Middleware,
   NextFn,
-} from '../../packages/core/src';
+} from '../../packages/core';
+import { Gateway } from '../../packages/gateway';
 
 class MyServer extends Server {}
 
@@ -13,11 +14,12 @@ class TestService extends Service<MyServer> {
   public name = 'test';
 
   @Action('action')
-  @Middleware((ctx: Context, next: NextFn) => {
-    throw new Error('asdfasdf');
+  @Middleware(async (ctx: Context, next: NextFn) => {
+    await next();
   })
   public testAction(ctx: Context) {
-    throw new Error('asdfasdfasdfasdfasdf');
+    // throw new Error('asdfasdfasdfasdfasdf');
+    ctx.send({ awesome: 'test' });
   }
 }
 
@@ -32,14 +34,8 @@ const start = async () => {
   await serv.start([TestService]);
 };
 
-const makeRequest = async () => {
-  const res = await serv.request('test.action');
-
-  console.log(res);
-};
+const gateway = new Gateway();
 
 start().then(() => {
-  setTimeout(async () => {
-    await makeRequest();
-  }, 500);
+  return gateway.start();
 });

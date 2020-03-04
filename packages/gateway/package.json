@@ -16,6 +16,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@naty/core": "^0.0.0",
     "config": "^3.2.6"
   }
 }

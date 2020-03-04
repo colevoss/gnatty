@@ -105,7 +105,7 @@ export abstract class Server {
    */
   public async request<Response = any>(
     name: string,
-    data?: object,
+    data: object = {},
     meta: any = {},
     options: nats.RequestOptions = {},
   ): Promise<Response> {
