@@ -18,5 +18,6 @@
   "dependencies": {
     "@naty/core": "^0.0.1",
     "config": "^3.2.6"
-  }
+  },
+  "gitHead": "a45def963da8ac77543c89ade2ac97be3ab15801"
 }
