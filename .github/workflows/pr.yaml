@@ -1,9 +1,8 @@
-name: Master
+name: Pull Request
 
 on:
-  push:
-    branches:
-      - master
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   build:
