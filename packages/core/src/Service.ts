@@ -11,6 +11,8 @@ import {
   IEndpoint,
 } from './Decorators';
 
+// THIS IS A FREAKING TEST
+
 export abstract class Service<S extends Server = Server> {
   /**
    * The name of the service. This will be appended to action names.
