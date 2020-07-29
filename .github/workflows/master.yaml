@@ -27,3 +27,8 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: Publish
+        run: npm run lerna publish from-package -- --yes --no-push
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
