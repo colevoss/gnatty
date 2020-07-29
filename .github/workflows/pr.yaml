@@ -14,10 +14,12 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install
-        run: npm install
+        run: |
+          npm install
+          npm bootstrap
 
-      - name: Bootstrap
-        run: npm run lerna bootstrap
+      # - name: Bootstrap
+      #   run: npm run lerna bootstrap
 
       - name: Build
         run: npm run build
@@ -26,4 +28,4 @@ jobs:
         run: npm test
 
       - name: Publish
-        run: echo "ref ${{ github.ref }}, head_ref ${{ github.head_ref }}"
+        run: npm run lerna publish prerelease -- --no-push --no-git-tag-version --preid ${{ github.head_ref }}
