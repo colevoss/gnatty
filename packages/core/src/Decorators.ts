@@ -1,7 +1,6 @@
 import { IActionParams } from './interfaces/IActionParams';
 import { IMiddleware } from './interfaces/IMiddleware';
 import { IHandler } from './interfaces/IHandler';
-import { Context } from './Context';
 
 export const ACTION_SYMBOL = Symbol('NATY_ACTION');
 export const SUBSCRIPTION_SYMBOL = Symbol('NATY_SUBSCRIPTION');
