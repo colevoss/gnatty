@@ -19,5 +19,8 @@
     "@naty/core": "^0.0.6",
     "config": "^3.2.6"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "gitHead": "96a73d5d718a8693a0c72a1bd302b13353c6a981"
 }
