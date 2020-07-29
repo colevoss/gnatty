@@ -168,6 +168,7 @@ export abstract class Server {
    * Hook that is called after the server has been created but before it connects
    * to the Nats server
    * Do we need this any more?
+   * Yeah IDK
    */
   // public async created() {}
 
