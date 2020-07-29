@@ -27,5 +27,6 @@
   },
   "devDependencies": {
     "@types/pino": "^5.15.5"
-  }
+  },
+  "gitHead": "a45def963da8ac77543c89ade2ac97be3ab15801"
 }
