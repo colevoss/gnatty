@@ -1,6 +1,6 @@
 {
   "name": "@naty/gateway",
-  "version": "0.0.0",
+  "version": "0.0.1-alpha.0",
   "description": "<Need description>",
   "license": "ISC",
   "main": "dist/index.js",
@@ -16,7 +16,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@naty/core": "^0.0.0",
+    "@naty/core": "^0.0.1-alpha.0",
     "config": "^3.2.6"
   }
 }
