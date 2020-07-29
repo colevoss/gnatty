@@ -1,9 +1,13 @@
 {
-  "packages": ["packages/*"],
-  "version": "0.0.8",
+  "packages": [
+    "packages/*"
+  ],
+  "version": "0.1.0",
   "command": {
     "publish": {
-      "ignoreChanges": ["*.md"],
+      "ignoreChanges": [
+        "*.md"
+      ],
       "message": "chore(version): bump",
       "registry": "https://registry.npmjs.org"
     }
