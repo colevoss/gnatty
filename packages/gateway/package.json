@@ -1,5 +1,5 @@
 {
-  "name": "@naty/gateway",
+  "name": "@gnatty/gateway",
   "version": "0.0.7",
   "description": "<Need description>",
   "license": "ISC",
@@ -16,7 +16,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@naty/core": "^0.0.7",
+    "@gnatty/core": "^0.0.7",
     "config": "^3.2.6"
   },
   "publishConfig": {

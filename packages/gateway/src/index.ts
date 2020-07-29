@@ -1,5 +1,5 @@
 import * as http from 'http';
-import { Server } from '@naty/core';
+import { Server } from '@gnatty/core';
 
 type RequestPayload = {
   [key: string]: any;
