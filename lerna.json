@@ -1,11 +1,10 @@
 {
-  "packages": [
-    "packages/*"
-  ],
+  "packages": ["packages/*"],
   "version": "0.0.8",
   "command": {
     "publish": {
-      "message": "chore(release): publish",
+      "ignoreChanges": ["*.md"],
+      "message": "chore(version): bump",
       "registry": "https://registry.npmjs.org"
     }
   }
