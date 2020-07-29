@@ -1,6 +1,6 @@
 {
   "name": "@naty/core",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "<Need description>",
   "license": "ISC",
   "main": "dist/index.js",
