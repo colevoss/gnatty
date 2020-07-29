@@ -1,3 +1,14 @@
+# TODO:
+
+- Add PR workflow to publish canary version
+  - `lerna "publish" "--canary" "--no-push" "--amend" "--preid" "testing"`
+  - I don't think "amend" is necessary here anymore
+  - Need to figure out the `preid`
+  - Do we actually want to publish canary versions?
+    - I think the PR should include the version bump in it, thus making canary unecessary
+    - I think we can use `prerelease` with the commit hash as the preid or possible feature-{short hash}
+- Add Master branch workflow that publishes actual version
+
 # Typescript Lerna Boilerplate
 
 This repo can be used as a template for creating packages that leverage Typescript and Lerna.
