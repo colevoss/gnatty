@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - 'packages/**'
 
 jobs:
   build:
@@ -30,7 +28,8 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Publish
-        run: npm run lerna publish from-package -- --yes --no-push
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: coverage
