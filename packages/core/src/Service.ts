@@ -12,6 +12,10 @@ import {
 } from './Decorators';
 
 // THIS IS A FREAKING TEST
+// THIS IS A FREAKING TEST
+// THIS IS A FREAKING TEST
+// THIS IS A FREAKING TEST
+// THIS IS A FREAKING TEST
 
 export abstract class Service<S extends Server = Server> {
   /**
