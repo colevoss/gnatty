@@ -5,8 +5,8 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  build:
-    name: Doin it
+  pr-build-test:
+    name: Pull Request Build and Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
