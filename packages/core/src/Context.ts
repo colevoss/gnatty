@@ -3,6 +3,7 @@ import * as pino from 'pino';
 import { Server } from './Server';
 import { ISubscriptionPayload } from './interfaces/ISubscriptionPayload';
 
+// Context
 export class Context<Data = {}, Meta = {}> {
   /**
    * Data that was given on the message.data of the event
