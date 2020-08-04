@@ -44,7 +44,20 @@ export abstract class Server {
    * @param payload - Payload to publish to the event
    */
   public publish<Payload = object>(subject: string, payload: Payload) {
-    this.connection.publish(subject, payload);
+    try {
+      this.connection.publish(subject, payload);
+    } catch (e) {
+      if (e.message === 'Connection draining') {
+        this.logger.warn(
+          { subject },
+          'Connection draining during server publish',
+        );
+
+        return;
+      }
+
+      this.logger.error(e);
+    }
   }
 
   public subscribe(subject: string, callback: SubscriptionHandler): void;
@@ -89,7 +102,11 @@ export abstract class Server {
 
   public stop() {
     return new Promise((resolve) => {
+      this.logger.info('Draining subscriptions...');
       this.connection.drain(() => {
+        this.logger.info('Subscriptions drained');
+        this.connection.close();
+
         resolve();
       });
     });
@@ -209,6 +226,10 @@ export abstract class Server {
 
       this.connection.on('error', (err) => {
         this.logger.error(err);
+      });
+
+      this.connection.on('close', () => {
+        this.logger.info('NATS connection closed');
       });
 
       this.connection.on('disconnect', () => {
