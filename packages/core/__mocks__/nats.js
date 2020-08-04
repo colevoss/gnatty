@@ -19,6 +19,8 @@ class MockConnection extends EventEmitter {
       cb();
     });
 
+    this.close = jest.fn();
+
     this.request = jest.fn((name, payload, options, cb) => {
       cb(__testResponse);
     });
