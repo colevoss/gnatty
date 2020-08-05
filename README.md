@@ -1,56 +1,87 @@
-# TODO:
+# Gnatty
 
-- Add PR workflow to publish canary version
-  - `lerna "publish" "--canary" "--no-push" "--amend" "--preid" "testing"`
-  - I don't think "amend" is necessary here anymore
-  - Need to figure out the `preid`
-  - Do we actually want to publish canary versions?
-    - I think the PR should include the version bump in it, thus making canary unecessary
-    - I think we can use `prerelease` with the commit hash as the preid or possible feature-{short hash}
-- Add Master branch workflow that publishes actual version
+Gnatty is a collection of packages for building backend Node.js/TypeScript API's
+using the [NATS](https://nats.io/) messaging system. It is geared for building
+microservices that communicate over NATS using a request/reply or a pub/sub message
+patterns.
 
-# Typescript Lerna Boilerplate
+## Packages
 
-This repo can be used as a template for creating packages that leverage Typescript and Lerna.
+- [@gnatty/core](/packages/core)
+- [@gnatty/gateway](/packages/gateway)
 
-## Getting Started
+## Installation
 
-Click **[HERE](https://github.com/colevoss/lerna-typescript-boilerplate/generate)** to create a repo under your
-name or org in github. Then clone that repo, install dependencies, and start coding.
+### Existing TypeScript Node Project
 
-## Scripts
-
-This boilerplate comes with the following scripts
-
-### `create`
-
-The create script will create a new package in the `packages` directory with the name provided. It copies
-the `boilerplate` package and renames the `name` in the `package.json` with the name provided
-
-```bash
-npm run create -- <package-name>
+```
+npm install @gnatty/core @gnatty/gateway
 ```
 
-### `test`
+### New Project
 
-This will run all tests in the repo. It uses Jest's defaults for finding the tests.
+Create a new TypeScript Node project by using the [this](https://github.com/colevoss/typescript-node-boilerplate)
+template repo to create your new project. Then clone the new repo and install `@gnatty/core` (and `@gnatty/gateway`
+if necessary) to start your project.
 
-```bash
-npm test
+## Example
+
+```ts
+import { Server, Service, Context, Action, Subscribe } from '@gnatty/core';
+import { Gateway } from '@gatty/gateway';
+
+class ExampleServer extends Server {}
+
+class ExampleService extends Service<ExampleServer> {
+  public name = 'example';
+
+  @Action('action')
+  public async exampleAction(ctx: Context<{ foo: string }>) {
+    const { foo } = ctx.data;
+
+    this.logger.info({ foo }, 'example.action was requested');
+
+    ctx.send({ example: 'response' });
+  }
+
+  @Subscribe('testSubscription')
+  public async testSubscription(ctx: Context<{ bar: string }>) {
+    this.logger.info({ bar }, 'testSubscription event was published');
+  }
+}
+
+const server = ExampleServer.create({
+  json: true,
+  url: 'nats://localhost:4222',
+  user: 'ruser',
+  pass: 'T0pS3cr3t',
+});
+
+const gateway = new Gateway();
+
+const start = async () => {
+  await server.start([ExampleService]);
+  await gateway.start();
+};
+
+start();
 ```
 
-### `build`
+The example above creates a gnatty server and registers the `ExampleService`. The
+example service creates the `example.action` subject. Any NATS request to the `example.action`
+subject with the parameters of `{ foo: string }` will respond with `{ example: 'response' }`
+while also logging a message.
 
-This will build all packages into their own `<package-name>/dist` directory.
+The `ExampleService` also subscribes to the `testSubscription` subject. When an event
+is published to the `testSubscription` subject, it will be handled by this method.
 
-```bash
-npm run build
-```
+The example also uses the `@gnatty/gateway` package. This will create an HTTP server
+that will forward requests to the correct action based on the requested route and the
+service's name and action.
 
-### `commit`
+For the example above, making a `POST` request to `locahost:8080/example/action` will
+hit the gateway, parse the route to `example.action` and forward the request through
+NATS to the `example.action` action in the `ExampleService`.
 
-This uses [comitizen](https://github.com/commitizen/cz-cli) to help create awesome commit messages
-
-```bash
-npm run commit
-```
+_**Note:** the example above assumes a nats server is running at nats://localhost:4222. An easy way to achieve
+this is by running the [NATS docker image](https://hub.docker.com/_/nats) locally_
