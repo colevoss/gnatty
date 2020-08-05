@@ -1,3 +1,3 @@
-## @naty/core
+# @gnatty/core
 
-Status: Alpha
+## Classes
