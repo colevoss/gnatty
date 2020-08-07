@@ -8,3 +8,4 @@ export { IHandler } from './interfaces/IHandler';
 export { ISubscriptionPayload } from './interfaces/ISubscriptionPayload';
 export { IMiddleware, NextFn } from './interfaces/IMiddleware';
 export { IActionParams } from './interfaces/IActionParams';
+export { GnattyErrors } from './Errors';
