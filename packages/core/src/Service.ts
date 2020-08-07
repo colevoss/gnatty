@@ -10,6 +10,7 @@ import {
   MIDDLEWARE_SYMBOL,
   IEndpoint,
 } from './Decorators';
+import { GnattyError, ErrorNames } from './Errors';
 
 export abstract class Service<S extends Server = Server> {
   /**
@@ -136,14 +137,18 @@ export abstract class Service<S extends Server = Server> {
         await this.applyMiddleware(middleware)(context, handler);
       } catch (e) {
         this.logger.error(e);
+
         if (type === 'subscription') return;
 
-        const errorResponse = {
+        const error = {
+          status: e.status || 500,
+          error: e.error || ErrorNames.InternalServerErrorError,
           message: e.message,
+          ...((e.data && { data: e.data }) || {}),
         };
 
         context.send({
-          error: errorResponse,
+          error,
         });
       }
     };

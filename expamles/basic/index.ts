@@ -5,6 +5,7 @@ import {
   Action,
   Middleware,
   NextFn,
+  GnattyErrors,
 } from '../../packages/core';
 import { Gateway } from '../../packages/gateway';
 
@@ -14,11 +15,15 @@ class TestService extends Service<MyServer> {
   public name = 'test';
 
   @Action('action')
-  @Middleware(async (ctx: Context, next: NextFn) => {
+  @Middleware(async (ctx: Context<{ balls: string }>, next: NextFn) => {
+    ctx.data.balls = 'hello';
+
     await next();
   })
-  public testAction(ctx: Context) {
+  public testAction(ctx: Context<any>) {
     // throw new Error('asdfasdfasdfasdfasdf');
+    // throw new GnattyErrors.BadRequestError('Something', { test: 'freaking' });
+    // throw new GnattyErrors.BadRequestError('Something');
     ctx.send({ awesome: 'test' });
   }
 }
