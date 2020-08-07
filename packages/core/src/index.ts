@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-export { Server } from './Server';
+export { Server, DEFAULT_NATS_CONFIG } from './Server';
 export { Service } from './Service';
 export { Context } from './Context';
 export { Action, Subscribe, Middleware } from './Decorators';

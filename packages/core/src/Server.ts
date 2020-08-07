@@ -9,6 +9,13 @@ import { ClassType } from './interfaces/ClassType';
 
 type SubscriptionHandler = (payload: ISubscriptionPayload) => void;
 
+export const DEFAULT_NATS_CONFIG = {
+  json: true,
+  url: 'nats://localhost:4222',
+  user: 'ruser',
+  pass: 'T0pS3cr3t',
+};
+
 export abstract class Server {
   /**
    * Nats client connection
@@ -32,8 +39,13 @@ export abstract class Server {
    */
   public isConnected: boolean = false;
 
-  constructor(config: nats.ClientOpts) {
-    this.connectionConfig = config;
+  constructor(config: nats.ClientOpts = {}) {
+    const connctionConfig = {
+      ...DEFAULT_NATS_CONFIG,
+      ...config,
+    };
+
+    this.connectionConfig = connctionConfig;
     this.logger = this.loggerFactory();
   }
 
@@ -174,7 +186,7 @@ export abstract class Server {
    */
   public static create<S extends Server>(
     this: ClassType<S>,
-    connectionConfig: nats.ClientOpts,
+    connectionConfig?: nats.ClientOpts,
   ) {
     const server = new this(connectionConfig);
 
@@ -234,6 +246,16 @@ export abstract class Server {
 
       this.connection.on('disconnect', () => {
         this.logger.info('Diconnected from nats server');
+      });
+
+      this.connection.on('unsubscribe', (sid: string, subject: string) => {
+        this.logger.info(
+          {
+            subject,
+            sid,
+          },
+          `NATS unsubscribed subscription ${sid} for subject ${subject}`,
+        );
       });
     });
   }
