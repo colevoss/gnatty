@@ -5,7 +5,7 @@ type RequestPayload = {
   [key: string]: any;
 };
 
-class GatewayNatyServer extends Server {}
+class GnattyGatewayServer extends Server {}
 
 type HrTime = [number, number];
 
@@ -17,7 +17,7 @@ export class Gateway<S extends Server> {
   public httpServer: http.Server;
 
   constructor(
-    public natyServer: S = GatewayNatyServer.create({
+    public gnattyServer: S = GnattyGatewayServer.create({
       json: true,
       url: 'nats://localhost:4222',
       user: 'ruser',
@@ -75,7 +75,7 @@ export class Gateway<S extends Server> {
     const natsSubject = this.parsePath(request.url);
     const payload = await this.parseRequestJson(request);
 
-    this.natyServer.logger.debug(
+    this.gnattyServer.logger.debug(
       {
         httpUrl: request.url,
         natsSubject,
@@ -86,17 +86,20 @@ export class Gateway<S extends Server> {
 
     const start = process.hrtime();
 
-    const natsResponse = await this.natyServer.request(
+    const natsResponse = await this.gnattyServer.request(
       natsSubject,
       payload.data || {},
-      payload.meta || {},
+      {
+        ...(payload.meta || {}),
+        ...request.headers,
+      },
     );
 
     const delta = process.hrtime(start);
     const deltaMs = getTimeDelta(delta);
 
     response.setHeader('Content-Type', 'application/json');
-    response.setHeader('X-Naty-Response-Time', deltaMs + 'ms');
+    response.setHeader('X-Gnatty-Response-Time', deltaMs + 'ms');
 
     let status = 200;
     let error;
@@ -106,8 +109,20 @@ export class Gateway<S extends Server> {
       error = natsResponse.error;
     }
 
+    const responseData = error || natsResponse;
+
     response.writeHead(status);
-    response.end(JSON.stringify(error || natsResponse));
+    response.end(JSON.stringify(responseData));
+
+    this.gnattyServer.logger.debug(
+      {
+        httpUrl: request.url,
+        natsSubject,
+        response: responseData,
+        elapsedMs: deltaMs,
+      },
+      `Gateway response from ${request.url} to ${natsSubject}`,
+    );
   }
 
   private startGatewayServer() {
@@ -115,14 +130,14 @@ export class Gateway<S extends Server> {
       this.httpServer.listen(8080, () => {
         resolve();
 
-        this.natyServer.logger.info('Started Gateway server');
+        this.gnattyServer.logger.info('Started Gateway server');
       });
     });
   }
 
   private async startNatyServer() {
-    await this.natyServer.start();
-    this.natyServer.logger.info('Started Gateway Naty Server');
+    await this.gnattyServer.start();
+    this.gnattyServer.logger.info('Started Gateway Naty Server');
   }
 
   public async start() {
