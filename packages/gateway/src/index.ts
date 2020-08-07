@@ -16,14 +16,7 @@ const getTimeDelta = (delta: HrTime) => {
 export class Gateway<S extends Server> {
   public httpServer: http.Server;
 
-  constructor(
-    public gnattyServer: S = GnattyGatewayServer.create({
-      json: true,
-      url: 'nats://localhost:4222',
-      user: 'ruser',
-      pass: 'T0pS3cr3t',
-    }) as S,
-  ) {
+  constructor(public gnattyServer: S = GnattyGatewayServer.create() as S) {
     this.createGatewayServer();
   }
 

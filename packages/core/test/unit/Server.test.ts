@@ -1,4 +1,4 @@
-import { Server, Context } from '../../src';
+import { Server, DEFAULT_NATS_CONFIG, Context } from '../../src';
 
 const nats = require('nats');
 
@@ -15,13 +15,22 @@ describe('Server', () => {
   beforeEach(() => jest.clearAllMocks());
 
   it('Is newable', () => {
-    const server = new MockServer({
-      config: true,
-    } as any);
+    const server = new MockServer();
 
     expect(server).toBeDefined();
-    expect(server.connectionConfig).toEqual({ config: true });
+    expect(server.connectionConfig).toEqual(DEFAULT_NATS_CONFIG);
     expect(server.logger).toBeDefined();
+  });
+
+  it('Merges default config with provided config', () => {
+    const server = new MockServer({
+      someConfig: 'value',
+    } as any);
+
+    expect(server.connectionConfig).toEqual({
+      ...DEFAULT_NATS_CONFIG,
+      someConfig: 'value',
+    });
   });
 
   describe('.contextFactory', () => {
@@ -124,10 +133,10 @@ describe('Server', () => {
 
   describe('::create', () => {
     it('Returns a new instance of MockServer', () => {
-      const mockServer = MockServer.create({ config: true } as any);
+      const mockServer = MockServer.create();
 
       expect(mockServer).toBeInstanceOf(MockServer);
-      expect(mockServer.connectionConfig).toEqual({ config: true });
+      expect(mockServer.connectionConfig).toEqual(DEFAULT_NATS_CONFIG);
     });
   });
 
