@@ -247,6 +247,16 @@ export abstract class Server {
       this.connection.on('disconnect', () => {
         this.logger.info('Diconnected from nats server');
       });
+
+      this.connection.on('unsubscribe', (sid: string, subject: string) => {
+        this.logger.info(
+          {
+            subject,
+            sid,
+          },
+          `NATS unsubscribed subscription ${sid} for subject ${subject}`,
+        );
+      });
     });
   }
 
